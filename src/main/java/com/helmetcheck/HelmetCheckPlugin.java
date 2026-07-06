@@ -29,16 +29,21 @@ import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
-import net.runelite.api.GameState;
-import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.EquipmentInventorySlot;
+import net.runelite.api.ItemContainer;
+import net.runelite.api.events.ItemContainerChanged;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.api.gameval.InventoryID;
 
 @Slf4j
 @PluginDescriptor(
-	name = "Helmet Check"
+	name = "Helmet Check",
+	description = "Alerts you when you have nothing equipped in your head slot",
+	tags = {"hint", "gear", "head"}
 )
 public class HelmetCheckPlugin extends Plugin
 {
@@ -46,26 +51,61 @@ public class HelmetCheckPlugin extends Plugin
 	private Client client;
 
 	@Inject
+	private ClientThread clientThread;
+
+	@Inject
 	private HelmetCheckConfig config;
+
+	private boolean flag = true;
 
 	@Override
 	protected void startUp() throws Exception
 	{
-		log.debug("Helmet Check started!");
+		clientThread.invokeLater(() ->
+		{
+			final ItemContainer current = client.getItemContainer(InventoryID.WORN);
+			if (current != null && isHelmetOff(current))
+			{
+				printReminder();
+				flag = false;
+			}
+		});
 	}
 
 	@Override
 	protected void shutDown() throws Exception
 	{
-		log.debug("Helmet Check stopped!");
+		log.debug("Helmet Check Off!");
+	}
+
+	private void printReminder()
+	{
+		client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", config.reminder(), null);
+	}
+
+	private boolean isHelmetOff(ItemContainer equipment)
+	{
+		return equipment.getItem(EquipmentInventorySlot.HEAD.getSlotIdx()) == null;
 	}
 
 	@Subscribe
-	public void onGameStateChanged(GameStateChanged gameStateChanged)
+	public void onItemContainerChanged(ItemContainerChanged itemContainerChanged)
 	{
-		if (gameStateChanged.getGameState() == GameState.LOGGED_IN)
+		if (itemContainerChanged.getContainerId() == InventoryID.WORN)
 		{
-			client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Example says " + config.greeting(), null);
+			final ItemContainer worn = itemContainerChanged.getItemContainer();
+			if (isHelmetOff(worn))
+			{
+				if (flag)
+				{
+					printReminder();
+					flag = !flag;
+				}
+			}
+			else
+			{
+				flag = true;
+			}
 		}
 	}
 
