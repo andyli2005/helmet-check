@@ -28,17 +28,18 @@ import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 
-@ConfigGroup("equipmentcheck")
+@ConfigGroup("equipmentCheck")
 public interface EquipmentCheckConfig extends Config
 {
 	@ConfigItem(
-		keyName = "helmetCheck",
-		name = "Helmet Check",
-		description = "Checks when player's helmet is equipped"
+		keyName = "headCheck",
+		name = "Head Check",
+		description = "Checks when player's head is equipped",
+		position = 1
 	)
-	default String reminder()
+	default boolean isHeadEquipped()
 	{
-		return "Equip a helmet!";
+		return true;
 	}
 
 	@ConfigItem(
@@ -49,7 +50,7 @@ public interface EquipmentCheckConfig extends Config
 	)
 	default boolean isBodyEquipped()
 	{
-		return false;
+		return true;
 	}
 
 	@ConfigItem(
@@ -60,7 +61,7 @@ public interface EquipmentCheckConfig extends Config
 	)
 	default boolean areLegsEquipped()
 	{
-		return false;
+		return true;
 	}
 
 	@ConfigItem(
@@ -71,7 +72,7 @@ public interface EquipmentCheckConfig extends Config
 	)
 	default boolean areBootsEquipped()
 	{
-		return false;
+		return true;
 	}
 
 	@ConfigItem(
@@ -82,6 +83,6 @@ public interface EquipmentCheckConfig extends Config
 	)
 	default boolean areGlovesEquipped()
 	{
-		return false;
+		return true;
 	}
 }

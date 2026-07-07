@@ -25,8 +25,10 @@
 package com.equipmentcheck;
 
 import com.google.inject.Provides;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.Map;
 import javax.inject.Inject;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
@@ -36,6 +38,7 @@ import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.api.gameval.InventoryID;
@@ -64,20 +67,44 @@ public class EquipmentCheckPlugin extends Plugin
 	@Inject
 	private EquipmentCheckConfig config;
 
-	@Getter
-	private boolean flag = true;
+	// Maps enabled slots to boolean flags, which prevents empty slots from being printed multiple times
+	private final Map<EquipmentInventorySlot, Boolean> enabledSlots = new EnumMap<>(EquipmentInventorySlot.class);
+
+	private final Map<EquipmentInventorySlot, String> slotNames = new EnumMap<>(EquipmentInventorySlot.class);
+
+	Map<EquipmentInventorySlot, Boolean> getEnabledSlots()
+	{
+		return Collections.unmodifiableMap(enabledSlots);
+	}
+
+	@Provides
+	EquipmentCheckConfig provideConfig(ConfigManager configManager)
+	{
+		return configManager.getConfig(EquipmentCheckConfig.class);
+	}
 
 	@Override
 	protected void startUp() throws Exception
 	{
 		overlayManager.add(overlay);
+		for (EquipmentInventorySlot slot : EquipmentInventorySlot.values())
+		{
+			slotNames.put(slot, slot.name().toLowerCase());
+		}
 		clientThread.invokeLater(() ->
 		{
+			setupReminders();
 			final ItemContainer current = client.getItemContainer(InventoryID.WORN);
-			if (current != null && isHelmetOff(current))
+			if (current != null)
 			{
-				printReminder();
-				flag = false;
+				for (EquipmentInventorySlot slot : enabledSlots.keySet())
+				{
+					if (isUnequipped(current, slot))
+					{
+						printReminder(slot);
+						enabledSlots.put(slot, false);
+					}
+				}
 			}
 		});
 	}
@@ -88,40 +115,90 @@ public class EquipmentCheckPlugin extends Plugin
 		overlayManager.remove(overlay);
 	}
 
-	private void printReminder()
-	{
-		client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", config.reminder(), null);
-	}
-
-	private boolean isHelmetOff(ItemContainer equipment)
-	{
-		return equipment.getItem(EquipmentInventorySlot.HEAD.getSlotIdx()) == null;
-	}
-
 	@Subscribe
 	public void onItemContainerChanged(ItemContainerChanged itemContainerChanged)
 	{
 		if (itemContainerChanged.getContainerId() == InventoryID.WORN)
 		{
 			final ItemContainer worn = itemContainerChanged.getItemContainer();
-			if (isHelmetOff(worn))
+
+			for (EquipmentInventorySlot slot : enabledSlots.keySet())
 			{
-				if (flag)
+				if (isUnequipped(worn, slot))
 				{
-					printReminder();
-					flag = !flag;
+					if (enabledSlots.get(slot))
+					{
+						printReminder(slot);
+						enabledSlots.put(slot, false);
+					}
 				}
-			}
-			else
-			{
-				flag = true;
+				else
+				{
+					enabledSlots.put(slot, true);
+				}
 			}
 		}
 	}
 
-	@Provides
-	EquipmentCheckConfig provideConfig(ConfigManager configManager)
+	@Subscribe
+	public void onConfigChanged(ConfigChanged event)
 	{
-		return configManager.getConfig(EquipmentCheckConfig.class);
+		if (event.getGroup().equals("equipmentCheck"))
+		{
+			boolean enabled = Boolean.TRUE.toString().equals(event.getNewValue());
+			clientThread.invokeLater(() ->
+			{
+				switch (event.getKey())
+				{
+					case "headCheck":
+						addIfEnabled(enabled, EquipmentInventorySlot.HEAD);
+						break;
+					case "bodyCheck":
+						addIfEnabled(enabled, EquipmentInventorySlot.BODY);
+						break;
+					case "legsCheck":
+						addIfEnabled(enabled, EquipmentInventorySlot.LEGS);
+						break;
+					case "bootsCheck":
+						addIfEnabled(enabled, EquipmentInventorySlot.BOOTS);
+						break;
+					case "glovesCheck":
+						addIfEnabled(enabled, EquipmentInventorySlot.GLOVES);
+						break;
+				}
+			});
+		}
+	}
+
+	private boolean isUnequipped(ItemContainer equipment, EquipmentInventorySlot slot)
+	{
+		return equipment.getItem(slot.getSlotIdx()) == null;
+	}
+
+	private void addIfEnabled(boolean isEnabled, EquipmentInventorySlot slot)
+	{
+		if (isEnabled)
+		{
+			enabledSlots.put(slot, true);
+		}
+		else
+		{
+			enabledSlots.remove(slot);
+		}
+	}
+
+	private void setupReminders()
+	{
+		addIfEnabled(config.isHeadEquipped(), EquipmentInventorySlot.HEAD);
+		addIfEnabled(config.isBodyEquipped(), EquipmentInventorySlot.BODY);
+		addIfEnabled(config.areLegsEquipped(), EquipmentInventorySlot.LEGS);
+		addIfEnabled(config.areBootsEquipped(), EquipmentInventorySlot.BOOTS);
+		addIfEnabled(config.areGlovesEquipped(), EquipmentInventorySlot.GLOVES);
+	}
+
+	private void printReminder(EquipmentInventorySlot slot)
+	{
+		String reminder = "Your " + slotNames.get(slot) + " slot is empty!";
+		client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", reminder, null);
 	}
 }

@@ -27,8 +27,10 @@ package com.equipmentcheck;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.util.Map;
 import javax.inject.Inject;
 import net.runelite.api.Client;
+import net.runelite.api.EquipmentInventorySlot;
 import net.runelite.api.MenuAction;
 import static net.runelite.client.ui.overlay.OverlayManager.OPTION_CONFIGURE;
 import net.runelite.client.ui.overlay.OverlayPanel;
@@ -55,17 +57,18 @@ public class EquipmentCheckOverlay extends OverlayPanel
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (plugin.isFlag())
+		Map<EquipmentInventorySlot, Boolean> enabledSlots = plugin.getEnabledSlots();
+		if (enabledSlots.containsKey(EquipmentInventorySlot.BODY) && enabledSlots.get(EquipmentInventorySlot.BODY))
 		{
 			panelComponent.getChildren().add(TitleComponent.builder()
-				.text("Wearing a helmet")
+				.text("Wearing a Body")
 				.color(Color.GREEN)
 				.build());
 		}
 		else
 		{
 			panelComponent.getChildren().add(TitleComponent.builder()
-				.text("NOT wearing a helmet")
+				.text("NOT wearing a Body")
 				.color(Color.RED)
 				.build());
 		}
