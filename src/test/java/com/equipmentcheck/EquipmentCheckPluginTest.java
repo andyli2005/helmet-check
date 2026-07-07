@@ -1,13 +1,13 @@
-package com.helmetcheck;
+package com.equipmentcheck;
 
 import net.runelite.client.RuneLite;
 import net.runelite.client.externalplugins.ExternalPluginManager;
 
-public class HelmetCheckPluginTest
+public class EquipmentCheckPluginTest
 {
 	public static void main(String[] args) throws Exception
 	{
-		ExternalPluginManager.loadBuiltin(HelmetCheckPlugin.class);
+		ExternalPluginManager.loadBuiltin(EquipmentCheckPlugin.class);
 		RuneLite.main(args);
 	}
 }

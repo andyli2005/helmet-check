@@ -22,7 +22,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.helmetcheck;
+package com.equipmentcheck;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -35,21 +35,21 @@ import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.TitleComponent;
 
-public class HelmetCheckOverlay extends OverlayPanel
+public class EquipmentCheckOverlay extends OverlayPanel
 {
 	private final Client client;
-	private final HelmetCheckPlugin plugin;
-	private final HelmetCheckConfig config;
+	private final EquipmentCheckPlugin plugin;
+	private final EquipmentCheckConfig config;
 
 	@Inject
-	private HelmetCheckOverlay(final Client client, final HelmetCheckPlugin plugin, final HelmetCheckConfig config)
+	private EquipmentCheckOverlay(final Client client, final EquipmentCheckPlugin plugin, final EquipmentCheckConfig config)
 	{
 		super(plugin);
 		setPosition(OverlayPosition.ABOVE_CHATBOX_RIGHT);
 		this.client = client;
 		this.plugin = plugin;
 		this.config = config;
-		addMenuEntry(MenuAction.RUNELITE_OVERLAY_CONFIG, OPTION_CONFIGURE, "Helmet Check overlay");
+		addMenuEntry(MenuAction.RUNELITE_OVERLAY_CONFIG, OPTION_CONFIGURE, "Equipment Check overlay");
 	}
 
 	@Override

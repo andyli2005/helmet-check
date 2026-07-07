@@ -22,7 +22,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.helmetcheck;
+package com.equipmentcheck;
 
 import com.google.inject.Provides;
 import javax.inject.Inject;
@@ -43,17 +43,17 @@ import net.runelite.client.ui.overlay.OverlayManager;
 
 @Slf4j
 @PluginDescriptor(
-	name = "Helmet Check",
-	description = "Alerts you when you have nothing equipped in your head slot",
+	name = "Equipment Check",
+	description = "Alerts you when you have nothing equipped in your gear slots",
 	tags = {"hint", "gear", "head", "overlay"}
 )
-public class HelmetCheckPlugin extends Plugin
+public class EquipmentCheckPlugin extends Plugin
 {
 	@Inject
 	private Client client;
 
 	@Inject
-	private HelmetCheckOverlay overlay;
+	private EquipmentCheckOverlay overlay;
 
 	@Inject
 	private OverlayManager overlayManager;
@@ -62,7 +62,7 @@ public class HelmetCheckPlugin extends Plugin
 	private ClientThread clientThread;
 
 	@Inject
-	private HelmetCheckConfig config;
+	private EquipmentCheckConfig config;
 
 	@Getter
 	private boolean flag = true;
@@ -120,8 +120,8 @@ public class HelmetCheckPlugin extends Plugin
 	}
 
 	@Provides
-	HelmetCheckConfig provideConfig(ConfigManager configManager)
+	EquipmentCheckConfig provideConfig(ConfigManager configManager)
 	{
-		return configManager.getConfig(HelmetCheckConfig.class);
+		return configManager.getConfig(EquipmentCheckConfig.class);
 	}
 }

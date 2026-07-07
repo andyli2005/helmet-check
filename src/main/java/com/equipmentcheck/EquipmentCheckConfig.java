@@ -22,22 +22,66 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.helmetcheck;
+package com.equipmentcheck;
 
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 
-@ConfigGroup("helmetcheck")
-public interface HelmetCheckConfig extends Config
+@ConfigGroup("equipmentcheck")
+public interface EquipmentCheckConfig extends Config
 {
 	@ConfigItem(
-		keyName = "helmetcheck",
-		name = "Helmet Checker",
+		keyName = "helmetCheck",
+		name = "Helmet Check",
 		description = "Checks when player's helmet is equipped"
 	)
 	default String reminder()
 	{
 		return "Equip a helmet!";
+	}
+
+	@ConfigItem(
+		keyName = "bodyCheck",
+		name = "Body Check",
+		description = "Checks if player's body is equipped",
+		position = 2
+	)
+	default boolean isBodyEquipped()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "legsCheck",
+		name = "Legs Check",
+		description = "Checks if player's legs are equipped",
+		position = 3
+	)
+	default boolean areLegsEquipped()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "bootsCheck",
+		name = "Boots Check",
+		description = "Checks if player's boots are equipped",
+		position = 4
+	)
+	default boolean areBootsEquipped()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "glovesCheck",
+		name = "Gloves Check",
+		description = "Checks if player's gloves are equipped",
+		position = 5
+	)
+	default boolean areGlovesEquipped()
+	{
+		return false;
 	}
 }
