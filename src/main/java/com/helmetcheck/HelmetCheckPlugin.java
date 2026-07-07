@@ -26,6 +26,7 @@ package com.helmetcheck;
 
 import com.google.inject.Provides;
 import javax.inject.Inject;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
@@ -38,12 +39,13 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.api.gameval.InventoryID;
+import net.runelite.client.ui.overlay.OverlayManager;
 
 @Slf4j
 @PluginDescriptor(
 	name = "Helmet Check",
 	description = "Alerts you when you have nothing equipped in your head slot",
-	tags = {"hint", "gear", "head"}
+	tags = {"hint", "gear", "head", "overlay"}
 )
 public class HelmetCheckPlugin extends Plugin
 {
@@ -51,16 +53,24 @@ public class HelmetCheckPlugin extends Plugin
 	private Client client;
 
 	@Inject
+	private HelmetCheckOverlay overlay;
+
+	@Inject
+	private OverlayManager overlayManager;
+
+	@Inject
 	private ClientThread clientThread;
 
 	@Inject
 	private HelmetCheckConfig config;
 
+	@Getter
 	private boolean flag = true;
 
 	@Override
 	protected void startUp() throws Exception
 	{
+		overlayManager.add(overlay);
 		clientThread.invokeLater(() ->
 		{
 			final ItemContainer current = client.getItemContainer(InventoryID.WORN);
@@ -75,7 +85,7 @@ public class HelmetCheckPlugin extends Plugin
 	@Override
 	protected void shutDown() throws Exception
 	{
-		log.debug("Helmet Check Off!");
+		overlayManager.remove(overlay);
 	}
 
 	private void printReminder()
