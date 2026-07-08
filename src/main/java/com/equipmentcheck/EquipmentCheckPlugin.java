@@ -99,11 +99,7 @@ public class EquipmentCheckPlugin extends Plugin
 			{
 				for (EquipmentInventorySlot slot : enabledSlots.keySet())
 				{
-					if (isUnequipped(current, slot))
-					{
-						printReminder(slot);
-						enabledSlots.put(slot, false);
-					}
+					reconcile(slot, current);
 				}
 			}
 		});
@@ -148,23 +144,34 @@ public class EquipmentCheckPlugin extends Plugin
 			boolean enabled = Boolean.TRUE.toString().equals(event.getNewValue());
 			clientThread.invokeLater(() ->
 			{
+				EquipmentInventorySlot slot = null;
 				switch (event.getKey())
 				{
 					case "headCheck":
-						addIfEnabled(enabled, EquipmentInventorySlot.HEAD);
+						slot = EquipmentInventorySlot.HEAD;
 						break;
 					case "bodyCheck":
-						addIfEnabled(enabled, EquipmentInventorySlot.BODY);
+						slot = EquipmentInventorySlot.BODY;
 						break;
 					case "legsCheck":
-						addIfEnabled(enabled, EquipmentInventorySlot.LEGS);
+						slot = EquipmentInventorySlot.LEGS;
 						break;
 					case "bootsCheck":
-						addIfEnabled(enabled, EquipmentInventorySlot.BOOTS);
+						slot = EquipmentInventorySlot.BOOTS;
 						break;
 					case "glovesCheck":
-						addIfEnabled(enabled, EquipmentInventorySlot.GLOVES);
+						slot =  EquipmentInventorySlot.GLOVES;
 						break;
+				}
+				if (slot != null)
+				{
+					addIfEnabled(enabled, slot);
+
+					final ItemContainer current = client.getItemContainer(InventoryID.WORN);
+					if (enabled && current != null)
+					{
+						reconcile(slot, current);
+					}
 				}
 			});
 		}
@@ -200,5 +207,14 @@ public class EquipmentCheckPlugin extends Plugin
 	{
 		String reminder = "Your " + slotNames.get(slot) + " slot is empty!";
 		client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", reminder, null);
+	}
+
+	private void reconcile(EquipmentInventorySlot slot, ItemContainer container)
+	{
+		if (isUnequipped(container, slot))
+		{
+			printReminder(slot);
+			enabledSlots.put(slot, false);
+		}
 	}
 }
