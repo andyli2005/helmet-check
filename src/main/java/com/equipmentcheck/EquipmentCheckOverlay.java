@@ -29,7 +29,6 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.util.Map;
 import javax.inject.Inject;
-import net.runelite.api.Client;
 import net.runelite.api.EquipmentInventorySlot;
 import net.runelite.api.MenuAction;
 import static net.runelite.client.ui.overlay.OverlayManager.OPTION_CONFIGURE;
@@ -39,18 +38,14 @@ import net.runelite.client.ui.overlay.components.TitleComponent;
 
 public class EquipmentCheckOverlay extends OverlayPanel
 {
-	private final Client client;
 	private final EquipmentCheckPlugin plugin;
-	private final EquipmentCheckConfig config;
 
 	@Inject
-	private EquipmentCheckOverlay(final Client client, final EquipmentCheckPlugin plugin, final EquipmentCheckConfig config)
+	private EquipmentCheckOverlay(final EquipmentCheckPlugin plugin)
 	{
 		super(plugin);
 		setPosition(OverlayPosition.ABOVE_CHATBOX_RIGHT);
-		this.client = client;
 		this.plugin = plugin;
-		this.config = config;
 		addMenuEntry(MenuAction.RUNELITE_OVERLAY_CONFIG, OPTION_CONFIGURE, "Equipment Check overlay");
 	}
 
@@ -58,19 +53,24 @@ public class EquipmentCheckOverlay extends OverlayPanel
 	public Dimension render(Graphics2D graphics)
 	{
 		Map<EquipmentInventorySlot, Boolean> enabledSlots = plugin.getEnabledSlots();
-		if (enabledSlots.containsKey(EquipmentInventorySlot.BODY) && enabledSlots.get(EquipmentInventorySlot.BODY))
+		Map<EquipmentInventorySlot, String> slotNames = plugin.getSlotNames();
+		for (EquipmentInventorySlot slot : enabledSlots.keySet())
 		{
-			panelComponent.getChildren().add(TitleComponent.builder()
-				.text("Wearing a Body")
-				.color(Color.GREEN)
-				.build());
-		}
-		else
-		{
-			panelComponent.getChildren().add(TitleComponent.builder()
-				.text("NOT wearing a Body")
-				.color(Color.RED)
-				.build());
+			String name = slotNames.get(slot);
+			if (!plugin.isSlotEmpty(slot))
+			{
+				panelComponent.getChildren().add(TitleComponent.builder()
+					.text("Wearing a " + name)
+					.color(Color.GREEN)
+					.build());
+			}
+			else
+			{
+				panelComponent.getChildren().add(TitleComponent.builder()
+					.text("NOT wearing a " + name)
+					.color(Color.RED)
+					.build());
+			}
 		}
 		return super.render(graphics);
 	}

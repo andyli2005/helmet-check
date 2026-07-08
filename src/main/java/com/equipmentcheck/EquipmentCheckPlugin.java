@@ -77,6 +77,12 @@ public class EquipmentCheckPlugin extends Plugin
 		return Collections.unmodifiableMap(enabledSlots);
 	}
 
+	Map<EquipmentInventorySlot, String> getSlotNames()
+	{
+		return Collections.unmodifiableMap(slotNames);
+	}
+
+
 	@Provides
 	EquipmentCheckConfig provideConfig(ConfigManager configManager)
 	{
@@ -175,6 +181,16 @@ public class EquipmentCheckPlugin extends Plugin
 				}
 			});
 		}
+	}
+
+	boolean isSlotEmpty(EquipmentInventorySlot slot)
+	{
+		ItemContainer worn = client.getItemContainer(InventoryID.WORN);
+		if (worn != null)
+		{
+			return isUnequipped(worn, slot);
+		}
+		return false;
 	}
 
 	private boolean isUnequipped(ItemContainer equipment, EquipmentInventorySlot slot)
