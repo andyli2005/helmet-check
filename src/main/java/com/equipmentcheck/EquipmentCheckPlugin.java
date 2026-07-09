@@ -35,6 +35,7 @@ import net.runelite.api.Client;
 import net.runelite.api.EquipmentInventorySlot;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.events.ItemContainerChanged;
+import net.runelite.client.Notifier;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -67,6 +68,11 @@ public class EquipmentCheckPlugin extends Plugin
 	@Inject
 	private EquipmentCheckConfig config;
 
+	@Inject
+	private Notifier notifier;
+
+	private boolean hasNotified = false;
+
 	// Maps enabled slots to boolean flags, which prevents empty slots from being printed multiple times
 	private final Map<EquipmentInventorySlot, Boolean> enabledSlots = new EnumMap<>(EquipmentInventorySlot.class);
 
@@ -82,7 +88,6 @@ public class EquipmentCheckPlugin extends Plugin
 		return Collections.unmodifiableMap(slotNames);
 	}
 
-
 	@Provides
 	EquipmentCheckConfig provideConfig(ConfigManager configManager)
 	{
@@ -97,6 +102,7 @@ public class EquipmentCheckPlugin extends Plugin
 		{
 			slotNames.put(slot, slot.name().toLowerCase());
 		}
+		hasNotified = false;
 		clientThread.invokeLater(() ->
 		{
 			setupReminders();
@@ -130,14 +136,17 @@ public class EquipmentCheckPlugin extends Plugin
 				{
 					if (enabledSlots.get(slot))
 					{
-						printReminder(slot);
-						enabledSlots.put(slot, false);
+						alert(slot);
 					}
 				}
 				else
 				{
 					enabledSlots.put(slot, true);
 				}
+			}
+			if (enabledSlots.isEmpty() || !enabledSlots.containsValue(false))
+			{
+				hasNotified = false;
 			}
 		}
 	}
@@ -225,12 +234,22 @@ public class EquipmentCheckPlugin extends Plugin
 		client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", reminder, null);
 	}
 
+	private void alert(EquipmentInventorySlot slot)
+	{
+		enabledSlots.put(slot, false);
+		printReminder(slot);
+		if (!hasNotified)
+		{
+			notifier.notify(config.getEmptyNotification(), "You have an empty slot!");
+			hasNotified = true;
+		}
+	}
+
 	private void reconcile(EquipmentInventorySlot slot, ItemContainer container)
 	{
 		if (isUnequipped(container, slot))
 		{
-			printReminder(slot);
-			enabledSlots.put(slot, false);
+			alert(slot);
 		}
 	}
 }

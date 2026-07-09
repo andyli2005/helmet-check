@@ -27,6 +27,7 @@ package com.equipmentcheck;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.Notification;
 
 @ConfigGroup("equipmentCheck")
 public interface EquipmentCheckConfig extends Config
@@ -84,5 +85,16 @@ public interface EquipmentCheckConfig extends Config
 	default boolean areGlovesEquipped()
 	{
 		return true;
+	}
+
+	@ConfigItem(
+		keyName = "emptyNotifier",
+		name = "Empty Notifier",
+		description = "Configures if empty equipment slot(s) notifications are enabled.",
+		position = 6
+	)
+	default Notification getEmptyNotification()
+	{
+		return Notification.OFF;
 	}
 }
