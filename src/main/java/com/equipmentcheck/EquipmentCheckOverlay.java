@@ -27,7 +27,9 @@ package com.equipmentcheck;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.util.EnumMap;
 import java.util.Map;
+import java.util.function.Supplier;
 import javax.inject.Inject;
 import net.runelite.api.EquipmentInventorySlot;
 import net.runelite.api.MenuAction;
@@ -39,13 +41,17 @@ import net.runelite.client.ui.overlay.components.TitleComponent;
 public class EquipmentCheckOverlay extends OverlayPanel
 {
 	private final EquipmentCheckPlugin plugin;
+	private final EquipmentCheckConfig config;
+	private final Map<EquipmentInventorySlot, Supplier<Color>> slotColors = new EnumMap<>(EquipmentInventorySlot.class);
 
 	@Inject
-	private EquipmentCheckOverlay(final EquipmentCheckPlugin plugin)
+	private EquipmentCheckOverlay(EquipmentCheckPlugin plugin, EquipmentCheckConfig config)
 	{
 		super(plugin);
 		setPosition(OverlayPosition.ABOVE_CHATBOX_RIGHT);
 		this.plugin = plugin;
+		this.config = config;
+		setupColors();
 		addMenuEntry(MenuAction.RUNELITE_OVERLAY_CONFIG, OPTION_CONFIGURE, "Equipment Check overlay");
 	}
 
@@ -57,21 +63,24 @@ public class EquipmentCheckOverlay extends OverlayPanel
 		for (EquipmentInventorySlot slot : enabledSlots.keySet())
 		{
 			String name = slotNames.get(slot);
-			if (!plugin.isSlotEmpty(slot))
-			{
-				panelComponent.getChildren().add(TitleComponent.builder()
-					.text("Wearing a " + name)
-					.color(Color.GREEN)
-					.build());
-			}
-			else
+			if (plugin.isSlotEmpty(slot))
 			{
 				panelComponent.getChildren().add(TitleComponent.builder()
 					.text("NOT wearing a " + name)
-					.color(Color.RED)
+					.color(slotColors.get(slot).get())
 					.build());
 			}
 		}
+		panelComponent.setBackgroundColor(config.overlayColor());
 		return super.render(graphics);
+	}
+
+	private void setupColors()
+	{
+		slotColors.put(EquipmentInventorySlot.HEAD, config::headColor);
+		slotColors.put(EquipmentInventorySlot.BODY, config::bodyColor);
+		slotColors.put(EquipmentInventorySlot.LEGS, config::legsColor);
+		slotColors.put(EquipmentInventorySlot.BOOTS, config::bootsColor);
+		slotColors.put(EquipmentInventorySlot.GLOVES, config::glovesColor);
 	}
 }
