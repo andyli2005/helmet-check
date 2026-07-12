@@ -58,10 +58,98 @@ public interface EquipmentCheckConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "capeCheck",
+		name = "Cape",
+		description = "Checks if player's cape is equipped",
+		position = 3
+	)
+	default boolean isCapeEquipped()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "capeColor",
+		name = "Empty Cape Warning",
+		description = "Configures the color for the warning for empty cape slot.",
+		position = 4
+	)
+	default Color capeColor()
+	{
+		return Color.RED;
+	}
+
+	@ConfigItem(
+		keyName = "amuletCheck",
+		name = "Amulet",
+		description = "Checks if player's amulet is equipped",
+		position = 5
+	)
+	default boolean isAmuletEquipped()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "amuletColor",
+		name = "Empty Amulet Warning",
+		description = "Configures the color for the warning for empty amulet slot.",
+		position = 6
+	)
+	default Color amuletColor()
+	{
+		return Color.RED;
+	}
+
+	@ConfigItem(
+		keyName = "ammoCheck",
+		name = "Ammo",
+		description = "Checks if player's ammo is equipped",
+		position = 7
+	)
+	default boolean isAmmoEquipped()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "ammoColor",
+		name = "Empty Ammo Warning",
+		description = "Configures the color for the warning for empty ammo slot.",
+		position = 8
+	)
+	default Color ammoColor()
+	{
+		return Color.RED;
+	}
+
+	@ConfigItem(
+		keyName = "weaponCheck",
+		name = "Weapon",
+		description = "Checks if player's weapon is equipped",
+		position = 9
+	)
+	default boolean isWeaponEquipped()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "weaponColor",
+		name = "Empty Weapon Warning",
+		description = "Configures the color for the warning for empty weapon slot.",
+		position = 10
+	)
+	default Color weaponColor()
+	{
+		return Color.RED;
+	}
+
+	@ConfigItem(
 		keyName = "bodyCheck",
 		name = "Body",
 		description = "Checks if player's body is equipped",
-		position = 3
+		position = 11
 	)
 	default boolean isBodyEquipped()
 	{
@@ -72,9 +160,31 @@ public interface EquipmentCheckConfig extends Config
 		keyName = "bodyColor",
 		name = "Empty Body Warning",
 		description = "Configures the color for the warning for empty body slot.",
-		position = 4
+		position = 12
 	)
 	default Color bodyColor()
+	{
+		return Color.RED;
+	}
+
+	@ConfigItem(
+		keyName = "shieldCheck",
+		name = "Shield",
+		description = "Checks if player's shield is equipped",
+		position = 13
+	)
+	default boolean isShieldEquipped()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "shieldColor",
+		name = "Empty Shield Warning",
+		description = "Configures the color for the warning for empty shield slot.",
+		position = 14
+	)
+	default Color shieldColor()
 	{
 		return Color.RED;
 	}
@@ -83,7 +193,7 @@ public interface EquipmentCheckConfig extends Config
 		keyName = "legsCheck",
 		name = "Legs",
 		description = "Checks if player's legs are equipped",
-		position = 5
+		position = 15
 	)
 	default boolean areLegsEquipped()
 	{
@@ -94,32 +204,9 @@ public interface EquipmentCheckConfig extends Config
 		keyName = "legsColor",
 		name = "Empty Legs Warning",
 		description = "Configures the color for the warning for empty legs slot.",
-		position = 6
+		position = 16
 	)
 	default Color legsColor()
-	{
-		return Color.RED;
-	}
-
-
-	@ConfigItem(
-		keyName = "bootsCheck",
-		name = "Boots",
-		description = "Checks if player's boots are equipped",
-		position = 7
-	)
-	default boolean areBootsEquipped()
-	{
-		return true;
-	}
-
-	@ConfigItem(
-		keyName = "bootsColor",
-		name = "Empty Boots Warning",
-		description = "Configures the color for the warning for empty boots slot.",
-		position = 8
-	)
-	default Color bootsColor()
 	{
 		return Color.RED;
 	}
@@ -128,7 +215,7 @@ public interface EquipmentCheckConfig extends Config
 		keyName = "glovesCheck",
 		name = "Gloves",
 		description = "Checks if player's gloves are equipped",
-		position = 9
+		position = 17
 	)
 	default boolean areGlovesEquipped()
 	{
@@ -139,9 +226,53 @@ public interface EquipmentCheckConfig extends Config
 		keyName = "glovesColor",
 		name = "Empty Gloves Warning",
 		description = "Configures the color for the warning for empty gloves slot.",
-		position = 10
+		position = 18
 	)
 	default Color glovesColor()
+	{
+		return Color.RED;
+	}
+
+	@ConfigItem(
+		keyName = "bootsCheck",
+		name = "Boots",
+		description = "Checks if player's boots are equipped",
+		position = 19
+	)
+	default boolean areBootsEquipped()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "bootsColor",
+		name = "Empty Boots Warning",
+		description = "Configures the color for the warning for empty boots slot.",
+		position = 20
+	)
+	default Color bootsColor()
+	{
+		return Color.RED;
+	}
+
+	@ConfigItem(
+		keyName = "ringCheck",
+		name = "Ring",
+		description = "Checks if player's ring is equipped",
+		position = 21
+	)
+	default boolean isRingEquipped()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "ringColor",
+		name = "Empty Ring Warning",
+		description = "Configures the color for the warning for empty ring slot.",
+		position = 22
+	)
+	default Color ringColor()
 	{
 		return Color.RED;
 	}
@@ -150,7 +281,7 @@ public interface EquipmentCheckConfig extends Config
 		keyName = "emptyNotifier",
 		name = "Empty Slot Notifier",
 		description = "Configures if empty equipment slot(s) notifications are enabled.",
-		position = 11
+		position = 23
 	)
 	default Notification getEmptyNotification()
 	{
@@ -162,7 +293,7 @@ public interface EquipmentCheckConfig extends Config
 		keyName = "overlayColor",
 		name = "Overlay Color",
 		description = "Configures the color for overlay.",
-		position = 12
+		position = 24
 	)
 	default Color overlayColor()
 	{

@@ -78,9 +78,15 @@ public class EquipmentCheckOverlay extends OverlayPanel
 	private void setupColors()
 	{
 		slotColors.put(EquipmentInventorySlot.HEAD, config::headColor);
+		slotColors.put(EquipmentInventorySlot.CAPE, config::capeColor);
+		slotColors.put(EquipmentInventorySlot.AMULET, config::amuletColor);
+		slotColors.put(EquipmentInventorySlot.AMMO, config::ammoColor);
+		slotColors.put(EquipmentInventorySlot.WEAPON, config::weaponColor);
 		slotColors.put(EquipmentInventorySlot.BODY, config::bodyColor);
+		slotColors.put(EquipmentInventorySlot.SHIELD, config::shieldColor);
 		slotColors.put(EquipmentInventorySlot.LEGS, config::legsColor);
-		slotColors.put(EquipmentInventorySlot.BOOTS, config::bootsColor);
 		slotColors.put(EquipmentInventorySlot.GLOVES, config::glovesColor);
+		slotColors.put(EquipmentInventorySlot.BOOTS, config::bootsColor);
+		slotColors.put(EquipmentInventorySlot.RING, config::ringColor);
 	}
 }

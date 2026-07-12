@@ -165,6 +165,9 @@ public class EquipmentCheckPlugin extends Plugin
 					case "headCheck":
 						slot = EquipmentInventorySlot.HEAD;
 						break;
+					case "amuletCheck":
+						slot =  EquipmentInventorySlot.AMULET;
+						break;
 					case "bodyCheck":
 						slot = EquipmentInventorySlot.BODY;
 						break;
@@ -176,6 +179,21 @@ public class EquipmentCheckPlugin extends Plugin
 						break;
 					case "glovesCheck":
 						slot =  EquipmentInventorySlot.GLOVES;
+						break;
+					case "ringCheck":
+						slot = EquipmentInventorySlot.RING;
+						break;
+					case "capeCheck":
+						slot = EquipmentInventorySlot.CAPE;
+						break;
+					case "weaponCheck":
+						slot = EquipmentInventorySlot.WEAPON;
+						break;
+					case "shieldCheck":
+						slot = EquipmentInventorySlot.SHIELD;
+						break;
+					case "ammoCheck":
+						slot = EquipmentInventorySlot.AMMO;
 						break;
 				}
 				if (slot != null)
@@ -222,10 +240,16 @@ public class EquipmentCheckPlugin extends Plugin
 	private void setupReminders()
 	{
 		addIfEnabled(config.isHeadEquipped(), EquipmentInventorySlot.HEAD);
+		addIfEnabled(config.isCapeEquipped(), EquipmentInventorySlot.CAPE);
+		addIfEnabled(config.isAmuletEquipped(), EquipmentInventorySlot.AMULET);
+		addIfEnabled(config.isAmmoEquipped(), EquipmentInventorySlot.AMMO);
+		addIfEnabled(config.isWeaponEquipped(), EquipmentInventorySlot.WEAPON);
 		addIfEnabled(config.isBodyEquipped(), EquipmentInventorySlot.BODY);
+		addIfEnabled(config.isShieldEquipped(), EquipmentInventorySlot.SHIELD);
 		addIfEnabled(config.areLegsEquipped(), EquipmentInventorySlot.LEGS);
-		addIfEnabled(config.areBootsEquipped(), EquipmentInventorySlot.BOOTS);
 		addIfEnabled(config.areGlovesEquipped(), EquipmentInventorySlot.GLOVES);
+		addIfEnabled(config.areBootsEquipped(), EquipmentInventorySlot.BOOTS);
+		addIfEnabled(config.isRingEquipped(), EquipmentInventorySlot.RING);
 	}
 
 	private void printReminder(EquipmentInventorySlot slot)
