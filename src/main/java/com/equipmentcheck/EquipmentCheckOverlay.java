@@ -63,7 +63,7 @@ public class EquipmentCheckOverlay extends OverlayPanel
 		for (EquipmentInventorySlot slot : enabledSlots.keySet())
 		{
 			String name = slotNames.get(slot);
-			if (plugin.isSlotEmpty(slot))
+			if (plugin.isSlotEmpty(slot) && plugin.isSlotCompatible(slot))
 			{
 				panelComponent.getChildren().add(TitleComponent.builder()
 					.text("NOT wearing a " + name)

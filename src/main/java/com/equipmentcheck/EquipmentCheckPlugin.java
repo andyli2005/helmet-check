@@ -33,6 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.EquipmentInventorySlot;
+import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.client.Notifier;
@@ -40,6 +41,9 @@ import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
+import net.runelite.client.game.ItemEquipmentStats;
+import net.runelite.client.game.ItemManager;
+import net.runelite.client.game.ItemStats;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.api.gameval.InventoryID;
@@ -71,7 +75,12 @@ public class EquipmentCheckPlugin extends Plugin
 	@Inject
 	private Notifier notifier;
 
-	private boolean hasNotified = false;
+	@Inject
+	private ItemManager itemManager;
+
+	private boolean has2hEquipped;
+
+	private boolean hasNotified;
 
 	// Maps enabled slots to boolean flags, which prevents empty slots from being printed multiple times
 	private final Map<EquipmentInventorySlot, Boolean> enabledSlots = new EnumMap<>(EquipmentInventorySlot.class);
@@ -102,6 +111,7 @@ public class EquipmentCheckPlugin extends Plugin
 		{
 			slotNames.put(slot, slot.name().toLowerCase());
 		}
+		has2hEquipped = false;
 		hasNotified = false;
 		clientThread.invokeLater(() ->
 		{
@@ -109,6 +119,7 @@ public class EquipmentCheckPlugin extends Plugin
 			final ItemContainer current = client.getItemContainer(InventoryID.WORN);
 			if (current != null)
 			{
+				updateWeaponState(current);
 				for (EquipmentInventorySlot slot : enabledSlots.keySet())
 				{
 					reconcile(slot, current);
@@ -129,6 +140,7 @@ public class EquipmentCheckPlugin extends Plugin
 		if (itemContainerChanged.getContainerId() == InventoryID.WORN)
 		{
 			final ItemContainer worn = itemContainerChanged.getItemContainer();
+			updateWeaponState(worn);
 
 			for (EquipmentInventorySlot slot : enabledSlots.keySet())
 			{
@@ -166,7 +178,7 @@ public class EquipmentCheckPlugin extends Plugin
 						slot = EquipmentInventorySlot.HEAD;
 						break;
 					case "amuletCheck":
-						slot =  EquipmentInventorySlot.AMULET;
+						slot = EquipmentInventorySlot.AMULET;
 						break;
 					case "bodyCheck":
 						slot = EquipmentInventorySlot.BODY;
@@ -178,7 +190,7 @@ public class EquipmentCheckPlugin extends Plugin
 						slot = EquipmentInventorySlot.BOOTS;
 						break;
 					case "glovesCheck":
-						slot =  EquipmentInventorySlot.GLOVES;
+						slot = EquipmentInventorySlot.GLOVES;
 						break;
 					case "ringCheck":
 						slot = EquipmentInventorySlot.RING;
@@ -218,6 +230,11 @@ public class EquipmentCheckPlugin extends Plugin
 			return isUnequipped(worn, slot);
 		}
 		return false;
+	}
+
+	boolean isSlotCompatible(EquipmentInventorySlot slot)
+	{
+		return !(slot.equals(EquipmentInventorySlot.SHIELD) && has2hEquipped);
 	}
 
 	private boolean isUnequipped(ItemContainer equipment, EquipmentInventorySlot slot)
@@ -260,6 +277,10 @@ public class EquipmentCheckPlugin extends Plugin
 
 	private void alert(EquipmentInventorySlot slot)
 	{
+		if (!isSlotCompatible(slot))
+		{
+			return;
+		}
 		enabledSlots.put(slot, false);
 		printReminder(slot);
 		if (!hasNotified)
@@ -274,6 +295,23 @@ public class EquipmentCheckPlugin extends Plugin
 		if (isUnequipped(container, slot))
 		{
 			alert(slot);
+		}
+	}
+
+	private void updateWeaponState(ItemContainer equipment)
+	{
+		has2hEquipped = false;
+		Item weapon = equipment.getItem(EquipmentInventorySlot.WEAPON.getSlotIdx());
+		if (weapon != null)
+		{
+			int id = weapon.getId();
+			ItemStats stats;
+			ItemEquipmentStats equipmentStats;
+			if ((stats = itemManager.getItemStats(id)) != null &&
+				(equipmentStats = stats.getEquipment()) != null)
+			{
+				has2hEquipped = equipmentStats.isTwoHanded();
+			}
 		}
 	}
 }
