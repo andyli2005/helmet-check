@@ -56,8 +56,8 @@ import net.runelite.client.ui.overlay.OverlayManager;
 @Slf4j
 @PluginDescriptor(
 	name = "Equipment Check",
-	description = "Alerts you when you have nothing equipped in your gear slots",
-	tags = {"hint", "gear", "head", "overlay"}
+	description = "Alerts you when a gear slot is empty or missing a specific item",
+	tags = {"hint", "gear", "equipment", "item", "overlay"}
 )
 public class EquipmentCheckPlugin extends Plugin
 {
