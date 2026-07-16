@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2018, Tomas Slusny <slusnucky@gmail.com>
+ * Copyright (c) 2026, Andy Li
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
