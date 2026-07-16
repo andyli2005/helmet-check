@@ -90,11 +90,6 @@ public class EquipmentCheckPlugin extends Plugin
 
 	private final Map<EquipmentInventorySlot, String> slotNames = new EnumMap<>(EquipmentInventorySlot.class);
 
-	Map<EquipmentInventorySlot, SlotState> getEnabledSlots()
-	{
-		return Collections.unmodifiableMap(enabledSlots);
-	}
-
 	@Provides
 	EquipmentCheckConfig provideConfig(ConfigManager configManager)
 	{
@@ -120,7 +115,7 @@ public class EquipmentCheckPlugin extends Plugin
 				updateWeaponState(current);
 				for (EquipmentInventorySlot slot : enabledSlots.keySet())
 				{
-					reconcile(slot, current);
+					alertIfNeeded(slot, current);
 				}
 			}
 		});
@@ -174,11 +169,16 @@ public class EquipmentCheckPlugin extends Plugin
 				{
 					for (EquipmentInventorySlot slot : enabledSlots.keySet())
 					{
-						reconcile(slot, current);
+						alertIfNeeded(slot, current);
 					}
 				}
 			});
 		}
+	}
+
+	Map<EquipmentInventorySlot, SlotState> getEnabledSlots()
+	{
+		return Collections.unmodifiableMap(enabledSlots);
 	}
 
 	boolean isSlotUnsatisfied(EquipmentInventorySlot slot)
@@ -196,16 +196,32 @@ public class EquipmentCheckPlugin extends Plugin
 		return !(slot.equals(EquipmentInventorySlot.SHIELD) && has2hEquipped);
 	}
 
+	String getSlotLabel(EquipmentInventorySlot slot)
+	{
+		return isSlotEmpty(slot) ? slotNames.get(slot) : getSpecifiedItem(slot);
+	}
+
 	private boolean isSlotUnsatisfied(ItemContainer equipment, EquipmentInventorySlot slot)
 	{
-		if (isEmptyCheck(slot))
+		if (isSlotEmpty(slot))
 		{
 			return isUnequipped(equipment, slot);
 		}
 		else
 		{
-			return !isMatchingItemEquipped(equipment, slot, getRequiredItem(slot));
+			return !isMatchingItemEquipped(equipment, slot, getSpecifiedItem(slot));
 		}
+	}
+
+	// Unspecified item (i.e. empty) is equivalent to an empty item slot check
+	private boolean isSlotEmpty(EquipmentInventorySlot slot)
+	{
+		return enabledSlots.get(slot).getMode().get() == SlotCheckMode.EMPTY || getSpecifiedItem(slot).isEmpty();
+	}
+
+	private String getSpecifiedItem(EquipmentInventorySlot slot)
+	{
+		return enabledSlots.get(slot).getItem().get().strip();
 	}
 
 	private boolean isUnequipped(ItemContainer equipment, EquipmentInventorySlot slot)
@@ -225,36 +241,6 @@ public class EquipmentCheckPlugin extends Plugin
 			return equippedGearName.toLowerCase().contains(gearName.toLowerCase());
 		}
 		return false;
-	}
-
-	private String getRequiredItem(EquipmentInventorySlot slot)
-	{
-		return enabledSlots.get(slot).getItem().get().strip();
-	}
-
-	// Unspecified item (i.e. empty) is equivalent to an empty item slot check
-	private boolean isEmptyCheck(EquipmentInventorySlot slot)
-	{
-		return enabledSlots.get(slot).getMode().get() == SlotCheckMode.EMPTY || getRequiredItem(slot).isEmpty();
-	}
-
-	String getSlotLabel(EquipmentInventorySlot slot)
-	{
-		return isEmptyCheck(slot) ? slotNames.get(slot) : getRequiredItem(slot);
-	}
-
-	private void addIfEnabled(EquipmentInventorySlot slot, boolean shouldAlert, Supplier<SlotCheckMode> mode, Supplier<String> item)
-	{
-		if (shouldAlert)
-		{
-			final boolean prev = !enabledSlots.containsKey(slot) || enabledSlots.get(slot).isShouldAlert();
-			final SlotState state = new SlotState(prev, mode, item);
-			enabledSlots.put(slot, state);
-		}
-		else
-		{
-			enabledSlots.remove(slot);
-		}
 	}
 
 	private void setupReminders()
@@ -283,12 +269,27 @@ public class EquipmentCheckPlugin extends Plugin
 			config::ringCheckMode, config::getRingItem);
 	}
 
-	private void printReminder(EquipmentInventorySlot slot)
+	private void addIfEnabled(EquipmentInventorySlot slot, boolean shouldAlert, Supplier<SlotCheckMode> mode, Supplier<String> item)
 	{
-		final String reminder = isEmptyCheck(slot)
-			? "Your " + slotNames.get(slot) + " slot is empty!"
-			: "You do not have " + getRequiredItem(slot) + " equipped!";
-		client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", reminder, null);
+		if (shouldAlert)
+		{
+			final boolean prev = !enabledSlots.containsKey(slot) || enabledSlots.get(slot).isShouldAlert();
+			final SlotState state = new SlotState(prev, mode, item);
+			enabledSlots.put(slot, state);
+		}
+		else
+		{
+			enabledSlots.remove(slot);
+		}
+	}
+
+	// Checks a slot against the given equipment on demand, for moments no equipment event covers.
+	private void alertIfNeeded(EquipmentInventorySlot slot, ItemContainer container)
+	{
+		if (isSlotUnsatisfied(container, slot) && enabledSlots.get(slot).isShouldAlert())
+		{
+			alert(slot);
+		}
 	}
 
 	private void alert(EquipmentInventorySlot slot)
@@ -301,7 +302,7 @@ public class EquipmentCheckPlugin extends Plugin
 		printReminder(slot);
 		if (!hasNotified)
 		{
-			final String message = isEmptyCheck(slot)
+			final String message = isSlotEmpty(slot)
 				? "You have an empty slot!"
 				: "You are not wearing one of your listed items!";
 			notifier.notify(config.getEmptyNotification(), message);
@@ -309,12 +310,12 @@ public class EquipmentCheckPlugin extends Plugin
 		}
 	}
 
-	private void reconcile(EquipmentInventorySlot slot, ItemContainer container)
+	private void printReminder(EquipmentInventorySlot slot)
 	{
-		if (isSlotUnsatisfied(container, slot) && enabledSlots.get(slot).isShouldAlert())
-		{
-			alert(slot);
-		}
+		final String reminder = isSlotEmpty(slot)
+			? "Your " + slotNames.get(slot) + " slot is empty!"
+			: "You do not have " + getSpecifiedItem(slot) + " equipped!";
+		client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", reminder, null);
 	}
 
 	private void updateWeaponState(ItemContainer equipment)
