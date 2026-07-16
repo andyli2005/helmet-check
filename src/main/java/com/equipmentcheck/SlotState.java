@@ -26,19 +26,16 @@ package com.equipmentcheck;
 
 import com.equipmentcheck.config.SlotCheckMode;
 import java.util.function.Supplier;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@AllArgsConstructor
 class SlotState
 {
+	@Setter
 	private boolean shouldAlert;
-	private Supplier<SlotCheckMode> mode;
-	private Supplier<String> item;
-
-	public SlotState(boolean shouldAlert, Supplier<SlotCheckMode> mode, Supplier<String> item)
-	{
-		this.shouldAlert = shouldAlert;
-		this.mode = mode;
-		this.item = item;
-	}
+	private final Supplier<SlotCheckMode> mode;
+	private final Supplier<String> item;
 }

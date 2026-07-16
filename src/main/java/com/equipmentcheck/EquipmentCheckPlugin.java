@@ -32,7 +32,6 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.function.Supplier;
 import javax.inject.Inject;
-import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.EquipmentInventorySlot;
@@ -53,7 +52,6 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.api.gameval.InventoryID;
 import net.runelite.client.ui.overlay.OverlayManager;
 
-@Slf4j
 @PluginDescriptor(
 	name = "Equipment Check",
 	description = "Alerts you when a gear slot is empty or missing a specific item",
