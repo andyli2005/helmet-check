@@ -40,6 +40,7 @@ import net.runelite.client.ui.overlay.components.TitleComponent;
 
 public class EquipmentCheckOverlay extends OverlayPanel
 {
+	private static final int PANEL_PADDING = 10;
 	private final EquipmentCheckPlugin plugin;
 	private final EquipmentCheckConfig config;
 	private final Map<EquipmentInventorySlot, Supplier<Color>> slotColors = new EnumMap<>(EquipmentInventorySlot.class);
@@ -58,18 +59,23 @@ public class EquipmentCheckOverlay extends OverlayPanel
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		Map<EquipmentInventorySlot, Boolean> enabledSlots = plugin.getEnabledSlots();
-		Map<EquipmentInventorySlot, String> slotNames = plugin.getSlotNames();
+		final Map<EquipmentInventorySlot, SlotState> enabledSlots = plugin.getEnabledSlots();
+		int maxWidth = 0;
 		for (EquipmentInventorySlot slot : enabledSlots.keySet())
 		{
-			String name = slotNames.get(slot);
-			if (plugin.isSlotEmpty(slot) && plugin.isSlotCompatible(slot))
+			if (plugin.isSlotUnsatisfied(slot) && plugin.isSlotCompatible(slot))
 			{
+				final String text = "NOT wearing a " + plugin.getSlotLabel(slot);
+				maxWidth = Math.max(maxWidth, graphics.getFontMetrics().stringWidth(text));
 				panelComponent.getChildren().add(TitleComponent.builder()
-					.text("NOT wearing a " + name)
+					.text(text)
 					.color(slotColors.get(slot).get())
 					.build());
 			}
+		}
+		if (maxWidth > 0)
+		{
+			panelComponent.setPreferredSize(new Dimension(maxWidth + PANEL_PADDING, 0));
 		}
 		panelComponent.setBackgroundColor(config.overlayColor());
 		return super.render(graphics);

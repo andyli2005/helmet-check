@@ -24,6 +24,7 @@
  */
 package com.equipmentcheck;
 
+import com.equipmentcheck.config.SlotCheckMode;
 import java.awt.Color;
 import net.runelite.client.config.Alpha;
 import net.runelite.client.config.Config;
@@ -60,140 +61,284 @@ public interface EquipmentCheckConfig extends Config
 	@ConfigItem(
 		keyName = "headCheck",
 		name = "Head",
-		description = "Checks when player's head is equipped",
+		description = "Warn unless the head slot holds a specific item, warn when it is empty, or off.",
 		position = 1,
 		section = equipmentSlotsSection
 	)
-	default boolean isHeadEquipped()
+	default SlotCheckMode headCheckMode()
 	{
-		return true;
+		return SlotCheckMode.EMPTY;
+	}
+
+	@ConfigItem(
+		keyName = "headItem",
+		name = "Head item",
+		description = "Item required in the head slot when the mode is Item-specific. Partial names match."
+			+ " Leave blank to just check the slot is filled.",
+		position = 2,
+		section = equipmentSlotsSection
+	)
+	default String getHeadItem()
+	{
+		return "";
 	}
 
 	@ConfigItem(
 		keyName = "capeCheck",
 		name = "Cape",
-		description = "Checks if player's cape is equipped",
-		position = 2,
+		description = "Warn unless the cape slot holds a specific item, warn when it is empty, or off.",
+		position = 3,
 		section = equipmentSlotsSection
 	)
-	default boolean isCapeEquipped()
+	default SlotCheckMode capeCheckMode()
 	{
-		return true;
+		return SlotCheckMode.EMPTY;
+	}
+
+	@ConfigItem(
+		keyName = "capeItem",
+		name = "Cape item",
+		description = "Item required in the cape slot when the mode is Item-specific. Partial names match."
+			+ " Leave blank to just check the slot is filled.",
+		position = 4,
+		section = equipmentSlotsSection
+	)
+	default String getCapeItem()
+	{
+		return "";
 	}
 
 	@ConfigItem(
 		keyName = "amuletCheck",
 		name = "Amulet",
-		description = "Checks if player's amulet is equipped",
-		position = 3,
+		description = "Warn unless the amulet slot holds a specific item, warn when it is empty, or off.",
+		position = 5,
 		section = equipmentSlotsSection
 	)
-	default boolean isAmuletEquipped()
+	default SlotCheckMode amuletCheckMode()
 	{
-		return true;
+		return SlotCheckMode.EMPTY;
+	}
+
+	@ConfigItem(
+		keyName = "amuletItem",
+		name = "Amulet item",
+		description = "Item required in the amulet slot when the mode is Item-specific. Partial names match."
+			+ " Leave blank to just check the slot is filled.",
+		position = 6,
+		section = equipmentSlotsSection
+	)
+	default String getAmuletItem()
+	{
+		return "";
 	}
 
 	@ConfigItem(
 		keyName = "ammoCheck",
 		name = "Ammo",
-		description = "Checks if player's ammo is equipped",
-		position = 4,
+		description = "Warn unless the ammo slot holds a specific item, warn when it is empty, or off.",
+		position = 7,
 		section = equipmentSlotsSection
 	)
-	default boolean isAmmoEquipped()
+	default SlotCheckMode ammoCheckMode()
 	{
-		return true;
+		return SlotCheckMode.EMPTY;
+	}
+
+	@ConfigItem(
+		keyName = "ammoItem",
+		name = "Ammo item",
+		description = "Item required in the ammo slot when the mode is Item-specific. Partial names match."
+			+ " Leave blank to just check the slot is filled.",
+		position = 8,
+		section = equipmentSlotsSection
+	)
+	default String getAmmoItem()
+	{
+		return "";
 	}
 
 	@ConfigItem(
 		keyName = "weaponCheck",
 		name = "Weapon",
-		description = "Checks if player's weapon is equipped",
-		position = 5,
+		description = "Warn unless the weapon slot holds a specific item, warn when it is empty, or off.",
+		position = 9,
 		section = equipmentSlotsSection
 	)
-	default boolean isWeaponEquipped()
+	default SlotCheckMode weaponCheckMode()
 	{
-		return true;
+		return SlotCheckMode.EMPTY;
 	}
 
 	@ConfigItem(
-		keyName = "bodyCheck",
-		name = "Body",
-		description = "Checks if player's body is equipped",
-		position = 6,
+		keyName = "weaponItem",
+		name = "Weapon item",
+		description = "Item required in the weapon slot when the mode is Item-specific. Partial names match."
+			+ " Leave blank to just check the slot is filled.",
+		position = 10,
 		section = equipmentSlotsSection
 	)
-	default boolean isBodyEquipped()
+	default String getWeaponItem()
 	{
-		return true;
+		return "";
 	}
 
 	@ConfigItem(
 		keyName = "shieldCheck",
 		name = "Shield",
-		description = "Checks if player's shield is equipped",
-		position = 7,
+		description = "Warn unless the shield slot holds a specific item, warn when it is empty, or off."
+			+ " Suppressed automatically while a two-handed weapon is equipped.",
+		position = 11,
 		section = equipmentSlotsSection
 	)
-	default boolean isShieldEquipped()
+	default SlotCheckMode shieldCheckMode()
 	{
-		return true;
+		return SlotCheckMode.EMPTY;
+	}
+
+	@ConfigItem(
+		keyName = "shieldItem",
+		name = "Shield item",
+		description = "Item required in the shield slot when the mode is Item-specific. Partial names match."
+			+ " Leave blank to just check the slot is filled.",
+		position = 12,
+		section = equipmentSlotsSection
+	)
+	default String getShieldItem()
+	{
+		return "";
+	}
+
+	@ConfigItem(
+		keyName = "bodyCheck",
+		name = "Body",
+		description = "Warn unless the body slot holds a specific item, warn when it is empty, or off.",
+		position = 13,
+		section = equipmentSlotsSection
+	)
+	default SlotCheckMode bodyCheckMode()
+	{
+		return SlotCheckMode.EMPTY;
+	}
+
+	@ConfigItem(
+		keyName = "bodyItem",
+		name = "Body item",
+		description = "Item required in the body slot when the mode is Item-specific. Partial names match."
+			+ " Leave blank to just check the slot is filled.",
+		position = 14,
+		section = equipmentSlotsSection
+	)
+	default String getBodyItem()
+	{
+		return "";
 	}
 
 	@ConfigItem(
 		keyName = "legsCheck",
 		name = "Legs",
-		description = "Checks if player's legs are equipped",
-		position = 8,
+		description = "Warn unless the legs slot holds a specific item, warn when it is empty, or off.",
+		position = 15,
 		section = equipmentSlotsSection
 	)
-	default boolean areLegsEquipped()
+	default SlotCheckMode legsCheckMode()
 	{
-		return true;
+		return SlotCheckMode.EMPTY;
+	}
+
+	@ConfigItem(
+		keyName = "legsItem",
+		name = "Legs item",
+		description = "Item required in the legs slot when the mode is Item-specific. Partial names match."
+			+ " Leave blank to just check the slot is filled.",
+		position = 16,
+		section = equipmentSlotsSection
+	)
+	default String getLegsItem()
+	{
+		return "";
 	}
 
 	@ConfigItem(
 		keyName = "glovesCheck",
 		name = "Gloves",
-		description = "Checks if player's gloves are equipped",
-		position = 9,
+		description = "Warn unless the gloves slot holds a specific item, warn when it is empty, or off.",
+		position = 17,
 		section = equipmentSlotsSection
 	)
-	default boolean areGlovesEquipped()
+	default SlotCheckMode glovesCheckMode()
 	{
-		return true;
+		return SlotCheckMode.EMPTY;
+	}
+
+	@ConfigItem(
+		keyName = "glovesItem",
+		name = "Gloves item",
+		description = "Item required in the gloves slot when the mode is Item-specific. Partial names match."
+			+ " Leave blank to just check the slot is filled.",
+		position = 18,
+		section = equipmentSlotsSection
+	)
+	default String getGlovesItem()
+	{
+		return "";
 	}
 
 	@ConfigItem(
 		keyName = "bootsCheck",
 		name = "Boots",
-		description = "Checks if player's boots are equipped",
-		position = 10,
+		description = "Warn unless the boots slot holds a specific item, warn when it is empty, or off.",
+		position = 19,
 		section = equipmentSlotsSection
 	)
-	default boolean areBootsEquipped()
+	default SlotCheckMode bootsCheckMode()
 	{
-		return true;
+		return SlotCheckMode.EMPTY;
+	}
+
+	@ConfigItem(
+		keyName = "bootsItem",
+		name = "Boots item",
+		description = "Item required in the boots slot when the mode is Item-specific. Partial names match."
+			+ " Leave blank to just check the slot is filled.",
+		position = 20,
+		section = equipmentSlotsSection
+	)
+	default String getBootsItem()
+	{
+		return "";
 	}
 
 	@ConfigItem(
 		keyName = "ringCheck",
 		name = "Ring",
-		description = "Checks if player's ring is equipped",
-		position = 11,
+		description = "Warn unless the ring slot holds a specific item, warn when it is empty, or off.",
+		position = 21,
 		section = equipmentSlotsSection
 	)
-	default boolean isRingEquipped()
+	default SlotCheckMode ringCheckMode()
 	{
-		return true;
+		return SlotCheckMode.EMPTY;
+	}
+
+	@ConfigItem(
+		keyName = "ringItem",
+		name = "Ring item",
+		description = "Item required in the ring slot when the mode is Item-specific. Partial names match."
+			+ " Leave blank to just check the slot is filled.",
+		position = 22,
+		section = equipmentSlotsSection
+	)
+	default String getRingItem()
+	{
+		return "";
 	}
 
 	@ConfigItem(
 		keyName = "headColor",
-		name = "Empty Head Warning",
-		description = "Configures the color for the warning for empty head slot.",
-		position = 12,
+		name = "Head Warning",
+		description = "Color of the head slot's overlay warning.",
+		position = 23,
 		section = warningColorsSection
 	)
 	default Color headColor()
@@ -203,9 +348,9 @@ public interface EquipmentCheckConfig extends Config
 
 	@ConfigItem(
 		keyName = "capeColor",
-		name = "Empty Cape Warning",
-		description = "Configures the color for the warning for empty cape slot.",
-		position = 13,
+		name = "Cape Warning",
+		description = "Color of the cape slot's overlay warning.",
+		position = 24,
 		section = warningColorsSection
 	)
 	default Color capeColor()
@@ -215,9 +360,9 @@ public interface EquipmentCheckConfig extends Config
 
 	@ConfigItem(
 		keyName = "amuletColor",
-		name = "Empty Amulet Warning",
-		description = "Configures the color for the warning for empty amulet slot.",
-		position = 14,
+		name = "Amulet Warning",
+		description = "Color of the amulet slot's overlay warning.",
+		position = 25,
 		section = warningColorsSection
 	)
 	default Color amuletColor()
@@ -227,9 +372,9 @@ public interface EquipmentCheckConfig extends Config
 
 	@ConfigItem(
 		keyName = "ammoColor",
-		name = "Empty Ammo Warning",
-		description = "Configures the color for the warning for empty ammo slot.",
-		position = 15,
+		name = "Ammo Warning",
+		description = "Color of the ammo slot's overlay warning.",
+		position = 26,
 		section = warningColorsSection
 	)
 	default Color ammoColor()
@@ -239,9 +384,9 @@ public interface EquipmentCheckConfig extends Config
 
 	@ConfigItem(
 		keyName = "weaponColor",
-		name = "Empty Weapon Warning",
-		description = "Configures the color for the warning for empty weapon slot.",
-		position = 16,
+		name = "Weapon Warning",
+		description = "Color of the weapon slot's overlay warning.",
+		position = 27,
 		section = warningColorsSection
 	)
 	default Color weaponColor()
@@ -250,22 +395,10 @@ public interface EquipmentCheckConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "bodyColor",
-		name = "Empty Body Warning",
-		description = "Configures the color for the warning for empty body slot.",
-		position = 17,
-		section = warningColorsSection
-	)
-	default Color bodyColor()
-	{
-		return Color.RED;
-	}
-
-	@ConfigItem(
 		keyName = "shieldColor",
-		name = "Empty Shield Warning",
-		description = "Configures the color for the warning for empty shield slot.",
-		position = 18,
+		name = "Shield Warning",
+		description = "Color of the shield slot's overlay warning.",
+		position = 28,
 		section = warningColorsSection
 	)
 	default Color shieldColor()
@@ -274,10 +407,22 @@ public interface EquipmentCheckConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "bodyColor",
+		name = "Body Warning",
+		description = "Color of the body slot's overlay warning.",
+		position = 29,
+		section = warningColorsSection
+	)
+	default Color bodyColor()
+	{
+		return Color.RED;
+	}
+
+	@ConfigItem(
 		keyName = "legsColor",
-		name = "Empty Legs Warning",
-		description = "Configures the color for the warning for empty legs slot.",
-		position = 19,
+		name = "Legs Warning",
+		description = "Color of the legs slot's overlay warning.",
+		position = 30,
 		section = warningColorsSection
 	)
 	default Color legsColor()
@@ -287,9 +432,9 @@ public interface EquipmentCheckConfig extends Config
 
 	@ConfigItem(
 		keyName = "glovesColor",
-		name = "Empty Gloves Warning",
-		description = "Configures the color for the warning for empty gloves slot.",
-		position = 20,
+		name = "Gloves Warning",
+		description = "Color of the gloves slot's overlay warning.",
+		position = 31,
 		section = warningColorsSection
 	)
 	default Color glovesColor()
@@ -299,9 +444,9 @@ public interface EquipmentCheckConfig extends Config
 
 	@ConfigItem(
 		keyName = "bootsColor",
-		name = "Empty Boots Warning",
-		description = "Configures the color for the warning for empty boots slot.",
-		position = 21,
+		name = "Boots Warning",
+		description = "Color of the boots slot's overlay warning.",
+		position = 32,
 		section = warningColorsSection
 	)
 	default Color bootsColor()
@@ -311,9 +456,9 @@ public interface EquipmentCheckConfig extends Config
 
 	@ConfigItem(
 		keyName = "ringColor",
-		name = "Empty Ring Warning",
-		description = "Configures the color for the warning for empty ring slot.",
-		position = 22,
+		name = "Ring Warning",
+		description = "Color of the ring slot's overlay warning.",
+		position = 33,
 		section = warningColorsSection
 	)
 	default Color ringColor()
@@ -323,9 +468,10 @@ public interface EquipmentCheckConfig extends Config
 
 	@ConfigItem(
 		keyName = "emptyNotifier",
-		name = "Empty Slot Notifier",
-		description = "Configures if empty equipment slot(s) notifications are enabled.",
-		position = 23,
+		name = "Warning Notifier",
+		description = "Fires a notification (sound, screen flash or tray) the first time any watched slot"
+			+ " fails its check. Re-arms once every watched slot passes again.",
+		position = 34,
 		section = miscSection
 	)
 	default Notification getEmptyNotification()
@@ -338,7 +484,7 @@ public interface EquipmentCheckConfig extends Config
 		keyName = "overlayColor",
 		name = "Overlay Color",
 		description = "Configures the color for overlay.",
-		position = 24,
+		position = 35,
 		section = miscSection
 	)
 	default Color overlayColor()
