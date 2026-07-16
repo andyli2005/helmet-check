@@ -165,6 +165,16 @@ public class EquipmentCheckPlugin extends Plugin
 			clientThread.invokeLater(() ->
 			{
 				setupReminders();
+
+				String changed = event.getKey();
+				String suffix = changed.endsWith("Check") ? "Check" : "Item";
+				changed = changed.replace(suffix, "").toUpperCase();
+				EquipmentInventorySlot changedSlot = EquipmentInventorySlot.valueOf(changed);
+				if (enabledSlots.containsKey(changedSlot))
+				{
+					enabledSlots.get(changedSlot).setShouldAlert(true);
+				}
+
 				final ItemContainer current = client.getItemContainer(InventoryID.WORN);
 				if (current != null)
 				{
