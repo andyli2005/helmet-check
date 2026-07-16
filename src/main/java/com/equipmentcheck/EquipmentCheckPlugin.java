@@ -124,6 +124,8 @@ public class EquipmentCheckPlugin extends Plugin
 	protected void shutDown() throws Exception
 	{
 		overlayManager.remove(overlay);
+		enabledSlots.clear();
+		slotNames.clear();
 	}
 
 	@Subscribe
