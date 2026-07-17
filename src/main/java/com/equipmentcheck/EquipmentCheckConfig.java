@@ -26,6 +26,7 @@
 package com.equipmentcheck;
 
 import com.equipmentcheck.config.SlotCheckMode;
+import com.equipmentcheck.config.SlotContextMode;
 import java.awt.Color;
 import net.runelite.client.config.Alpha;
 import net.runelite.client.config.Config;
@@ -63,7 +64,7 @@ public interface EquipmentCheckConfig extends Config
 		keyName = "headCheck",
 		name = "Head",
 		description = "Warn unless the head slot holds a specific item, warn when it is empty, or off.",
-		position = 1,
+		position = 10,
 		section = equipmentSlotsSection
 	)
 	default SlotCheckMode headCheckMode()
@@ -76,7 +77,7 @@ public interface EquipmentCheckConfig extends Config
 		name = "Head item",
 		description = "Item required in the head slot when the mode is Item-specific. Partial names match."
 			+ " Leave blank to just check the slot is filled.",
-		position = 2,
+		position = 12,
 		section = equipmentSlotsSection
 	)
 	default String getHeadItem()
@@ -85,10 +86,22 @@ public interface EquipmentCheckConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "headContext",
+		name = "Head context",
+		description = "Warn always or only in Wilderness.",
+		position = 11,
+		section = equipmentSlotsSection
+	)
+	default SlotContextMode headContextMode()
+	{
+		return SlotContextMode.ALWAYS;
+	}
+
+	@ConfigItem(
 		keyName = "capeCheck",
 		name = "Cape",
 		description = "Warn unless the cape slot holds a specific item, warn when it is empty, or off.",
-		position = 3,
+		position = 20,
 		section = equipmentSlotsSection
 	)
 	default SlotCheckMode capeCheckMode()
@@ -101,7 +114,7 @@ public interface EquipmentCheckConfig extends Config
 		name = "Cape item",
 		description = "Item required in the cape slot when the mode is Item-specific. Partial names match."
 			+ " Leave blank to just check the slot is filled.",
-		position = 4,
+		position = 22,
 		section = equipmentSlotsSection
 	)
 	default String getCapeItem()
@@ -110,10 +123,22 @@ public interface EquipmentCheckConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "capeContext",
+		name = "Cape context",
+		description = "Warn always or only in Wilderness.",
+		position = 21,
+		section = equipmentSlotsSection
+	)
+	default SlotContextMode capeContextMode()
+	{
+		return SlotContextMode.ALWAYS;
+	}
+
+	@ConfigItem(
 		keyName = "amuletCheck",
 		name = "Amulet",
 		description = "Warn unless the amulet slot holds a specific item, warn when it is empty, or off.",
-		position = 5,
+		position = 30,
 		section = equipmentSlotsSection
 	)
 	default SlotCheckMode amuletCheckMode()
@@ -126,7 +151,7 @@ public interface EquipmentCheckConfig extends Config
 		name = "Amulet item",
 		description = "Item required in the amulet slot when the mode is Item-specific. Partial names match."
 			+ " Leave blank to just check the slot is filled.",
-		position = 6,
+		position = 32,
 		section = equipmentSlotsSection
 	)
 	default String getAmuletItem()
@@ -135,10 +160,22 @@ public interface EquipmentCheckConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "amuletContext",
+		name = "Amulet context",
+		description = "Warn always or only in Wilderness.",
+		position = 31,
+		section = equipmentSlotsSection
+	)
+	default SlotContextMode amuletContextMode()
+	{
+		return SlotContextMode.ALWAYS;
+	}
+
+	@ConfigItem(
 		keyName = "ammoCheck",
 		name = "Ammo",
 		description = "Warn unless the ammo slot holds a specific item, warn when it is empty, or off.",
-		position = 7,
+		position = 40,
 		section = equipmentSlotsSection
 	)
 	default SlotCheckMode ammoCheckMode()
@@ -151,7 +188,7 @@ public interface EquipmentCheckConfig extends Config
 		name = "Ammo item",
 		description = "Item required in the ammo slot when the mode is Item-specific. Partial names match."
 			+ " Leave blank to just check the slot is filled.",
-		position = 8,
+		position = 42,
 		section = equipmentSlotsSection
 	)
 	default String getAmmoItem()
@@ -160,10 +197,22 @@ public interface EquipmentCheckConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "ammoContext",
+		name = "Ammo context",
+		description = "Warn always or only in Wilderness.",
+		position = 41,
+		section = equipmentSlotsSection
+	)
+	default SlotContextMode ammoContextMode()
+	{
+		return SlotContextMode.ALWAYS;
+	}
+
+	@ConfigItem(
 		keyName = "weaponCheck",
 		name = "Weapon",
 		description = "Warn unless the weapon slot holds a specific item, warn when it is empty, or off.",
-		position = 9,
+		position = 50,
 		section = equipmentSlotsSection
 	)
 	default SlotCheckMode weaponCheckMode()
@@ -176,7 +225,7 @@ public interface EquipmentCheckConfig extends Config
 		name = "Weapon item",
 		description = "Item required in the weapon slot when the mode is Item-specific. Partial names match."
 			+ " Leave blank to just check the slot is filled.",
-		position = 10,
+		position = 52,
 		section = equipmentSlotsSection
 	)
 	default String getWeaponItem()
@@ -185,11 +234,23 @@ public interface EquipmentCheckConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "weaponContext",
+		name = "Weapon context",
+		description = "Warn always or only in Wilderness.",
+		position = 51,
+		section = equipmentSlotsSection
+	)
+	default SlotContextMode weaponContextMode()
+	{
+		return SlotContextMode.ALWAYS;
+	}
+
+	@ConfigItem(
 		keyName = "shieldCheck",
 		name = "Shield",
 		description = "Warn unless the shield slot holds a specific item, warn when it is empty, or off."
 			+ " Suppressed automatically while a two-handed weapon is equipped.",
-		position = 11,
+		position = 60,
 		section = equipmentSlotsSection
 	)
 	default SlotCheckMode shieldCheckMode()
@@ -202,7 +263,7 @@ public interface EquipmentCheckConfig extends Config
 		name = "Shield item",
 		description = "Item required in the shield slot when the mode is Item-specific. Partial names match."
 			+ " Leave blank to just check the slot is filled.",
-		position = 12,
+		position = 62,
 		section = equipmentSlotsSection
 	)
 	default String getShieldItem()
@@ -211,10 +272,22 @@ public interface EquipmentCheckConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "shieldContext",
+		name = "Shield context",
+		description = "Warn always or only in Wilderness.",
+		position = 61,
+		section = equipmentSlotsSection
+	)
+	default SlotContextMode shieldContextMode()
+	{
+		return SlotContextMode.ALWAYS;
+	}
+
+	@ConfigItem(
 		keyName = "bodyCheck",
 		name = "Body",
 		description = "Warn unless the body slot holds a specific item, warn when it is empty, or off.",
-		position = 13,
+		position = 70,
 		section = equipmentSlotsSection
 	)
 	default SlotCheckMode bodyCheckMode()
@@ -227,7 +300,7 @@ public interface EquipmentCheckConfig extends Config
 		name = "Body item",
 		description = "Item required in the body slot when the mode is Item-specific. Partial names match."
 			+ " Leave blank to just check the slot is filled.",
-		position = 14,
+		position = 72,
 		section = equipmentSlotsSection
 	)
 	default String getBodyItem()
@@ -236,10 +309,22 @@ public interface EquipmentCheckConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "bodyContext",
+		name = "Body context",
+		description = "Warn always or only in Wilderness.",
+		position = 71,
+		section = equipmentSlotsSection
+	)
+	default SlotContextMode bodyContextMode()
+	{
+		return SlotContextMode.ALWAYS;
+	}
+
+	@ConfigItem(
 		keyName = "legsCheck",
 		name = "Legs",
 		description = "Warn unless the legs slot holds a specific item, warn when it is empty, or off.",
-		position = 15,
+		position = 80,
 		section = equipmentSlotsSection
 	)
 	default SlotCheckMode legsCheckMode()
@@ -252,7 +337,7 @@ public interface EquipmentCheckConfig extends Config
 		name = "Legs item",
 		description = "Item required in the legs slot when the mode is Item-specific. Partial names match."
 			+ " Leave blank to just check the slot is filled.",
-		position = 16,
+		position = 82,
 		section = equipmentSlotsSection
 	)
 	default String getLegsItem()
@@ -261,10 +346,22 @@ public interface EquipmentCheckConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "legsContext",
+		name = "Legs context",
+		description = "Warn always or only in Wilderness.",
+		position = 81,
+		section = equipmentSlotsSection
+	)
+	default SlotContextMode legsContextMode()
+	{
+		return SlotContextMode.ALWAYS;
+	}
+
+	@ConfigItem(
 		keyName = "glovesCheck",
 		name = "Gloves",
 		description = "Warn unless the gloves slot holds a specific item, warn when it is empty, or off.",
-		position = 17,
+		position = 90,
 		section = equipmentSlotsSection
 	)
 	default SlotCheckMode glovesCheckMode()
@@ -277,7 +374,7 @@ public interface EquipmentCheckConfig extends Config
 		name = "Gloves item",
 		description = "Item required in the gloves slot when the mode is Item-specific. Partial names match."
 			+ " Leave blank to just check the slot is filled.",
-		position = 18,
+		position = 92,
 		section = equipmentSlotsSection
 	)
 	default String getGlovesItem()
@@ -286,10 +383,22 @@ public interface EquipmentCheckConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "glovesContext",
+		name = "Gloves context",
+		description = "Warn always or only in Wilderness.",
+		position = 91,
+		section = equipmentSlotsSection
+	)
+	default SlotContextMode glovesContextMode()
+	{
+		return SlotContextMode.ALWAYS;
+	}
+
+	@ConfigItem(
 		keyName = "bootsCheck",
 		name = "Boots",
 		description = "Warn unless the boots slot holds a specific item, warn when it is empty, or off.",
-		position = 19,
+		position = 100,
 		section = equipmentSlotsSection
 	)
 	default SlotCheckMode bootsCheckMode()
@@ -302,7 +411,7 @@ public interface EquipmentCheckConfig extends Config
 		name = "Boots item",
 		description = "Item required in the boots slot when the mode is Item-specific. Partial names match."
 			+ " Leave blank to just check the slot is filled.",
-		position = 20,
+		position = 102,
 		section = equipmentSlotsSection
 	)
 	default String getBootsItem()
@@ -311,10 +420,22 @@ public interface EquipmentCheckConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "bootsContext",
+		name = "Boots context",
+		description = "Warn always or only in Wilderness.",
+		position = 101,
+		section = equipmentSlotsSection
+	)
+	default SlotContextMode bootsContextMode()
+	{
+		return SlotContextMode.ALWAYS;
+	}
+
+	@ConfigItem(
 		keyName = "ringCheck",
 		name = "Ring",
 		description = "Warn unless the ring slot holds a specific item, warn when it is empty, or off.",
-		position = 21,
+		position = 110,
 		section = equipmentSlotsSection
 	)
 	default SlotCheckMode ringCheckMode()
@@ -327,12 +448,24 @@ public interface EquipmentCheckConfig extends Config
 		name = "Ring item",
 		description = "Item required in the ring slot when the mode is Item-specific. Partial names match."
 			+ " Leave blank to just check the slot is filled.",
-		position = 22,
+		position = 112,
 		section = equipmentSlotsSection
 	)
 	default String getRingItem()
 	{
 		return "";
+	}
+
+	@ConfigItem(
+		keyName = "ringContext",
+		name = "Ring context",
+		description = "Warn always or only in Wilderness.",
+		position = 111,
+		section = equipmentSlotsSection
+	)
+	default SlotContextMode ringContextMode()
+	{
+		return SlotContextMode.ALWAYS;
 	}
 
 	@ConfigItem(

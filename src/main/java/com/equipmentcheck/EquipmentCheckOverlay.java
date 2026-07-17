@@ -64,7 +64,7 @@ public class EquipmentCheckOverlay extends OverlayPanel
 		int maxWidth = 0;
 		for (EquipmentInventorySlot slot : enabledSlots.keySet())
 		{
-			if (plugin.isSlotUnsatisfied(slot) && plugin.isSlotCompatible(slot))
+			if (plugin.isSlotUnsatisfied(slot) && plugin.isSlotCompatible(slot) && plugin.isSlotContextActive(slot))
 			{
 				final String text = "NOT wearing a " + plugin.getSlotLabel(slot);
 				maxWidth = Math.max(maxWidth, graphics.getFontMetrics().stringWidth(text));

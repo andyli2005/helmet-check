@@ -22,22 +22,23 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.equipmentcheck;
+package com.equipmentcheck.config;
 
-import com.equipmentcheck.config.SlotCheckMode;
-import com.equipmentcheck.config.SlotContextMode;
-import java.util.function.Supplier;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
-@AllArgsConstructor
-class SlotState
+@RequiredArgsConstructor
+public enum SlotContextMode
 {
-	@Setter
-	private boolean shouldAlert;
-	private final Supplier<SlotCheckMode> mode;
-	private final Supplier<String> item;
-	private final Supplier<SlotContextMode> contextMode;
+	ALWAYS("Always"),
+	WILDERNESS("Wilderness");
+
+	private final String name;
+
+	@Override
+	public String toString()
+	{
+		return name;
+	}
 }

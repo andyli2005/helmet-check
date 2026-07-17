@@ -26,10 +26,12 @@
 package com.equipmentcheck;
 
 import com.equipmentcheck.config.SlotCheckMode;
+import com.equipmentcheck.config.SlotContextMode;
 import com.google.inject.Provides;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Supplier;
 import javax.inject.Inject;
 import net.runelite.api.ChatMessageType;
@@ -39,6 +41,8 @@ import net.runelite.api.Item;
 import net.runelite.api.ItemComposition;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.events.ItemContainerChanged;
+import net.runelite.api.events.VarbitChanged;
+import net.runelite.api.gameval.VarbitID;
 import net.runelite.client.Notifier;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
@@ -160,30 +164,62 @@ public class EquipmentCheckPlugin extends Plugin
 	@Subscribe
 	public void onConfigChanged(ConfigChanged event)
 	{
-		if (event.getGroup().equals("equipmentCheck") && (event.getKey().endsWith("Check") || event.getKey().endsWith("Item")))
+		if (event.getGroup().equals("equipmentCheck"))
 		{
-			clientThread.invokeLater(() ->
+			String key = event.getKey();
+			if (key.endsWith("Check") || key.endsWith("Item") || key.endsWith("Context"))
 			{
-				setupReminders();
-
-				String changed = event.getKey();
-				String suffix = changed.endsWith("Check") ? "Check" : "Item";
-				changed = changed.replace(suffix, "").toUpperCase();
-				EquipmentInventorySlot changedSlot = EquipmentInventorySlot.valueOf(changed);
-				if (enabledSlots.containsKey(changedSlot))
+				clientThread.invokeLater(() ->
 				{
-					enabledSlots.get(changedSlot).setShouldAlert(true);
-				}
+					setupReminders();
 
-				final ItemContainer current = client.getItemContainer(InventoryID.WORN);
-				if (current != null)
-				{
-					for (EquipmentInventorySlot slot : enabledSlots.keySet())
+					String suffix;
+					if (key.endsWith("Check"))
 					{
-						alertIfNeeded(slot, current);
+						suffix = "Check";
 					}
+					else if (key.endsWith("Item"))
+					{
+						suffix = "Item";
+					}
+					else
+					{
+						suffix = "Context";
+					}
+					String slotName = key.substring(0, key.length() - suffix.length()).toUpperCase();
+					EquipmentInventorySlot changedSlot = EquipmentInventorySlot.valueOf(slotName);
+					if (enabledSlots.containsKey(changedSlot))
+					{
+						enabledSlots.get(changedSlot).setShouldAlert(true);
+					}
+
+					final ItemContainer current = client.getItemContainer(InventoryID.WORN);
+					if (current != null)
+					{
+						for (EquipmentInventorySlot slot : enabledSlots.keySet())
+						{
+							alertIfNeeded(slot, current);
+						}
+					}
+				});
+			}
+		}
+	}
+
+	@Subscribe
+	public void onVarbitChanged(VarbitChanged varbitChanged)
+	{
+		final int varbitId = varbitChanged.getVarbitId();
+		if (varbitId == VarbitID.INSIDE_WILDERNESS)
+		{
+			final ItemContainer current = client.getItemContainer(InventoryID.WORN);
+			if (current != null)
+			{
+				for (EquipmentInventorySlot slot : enabledSlots.keySet())
+				{
+					alertIfNeeded(slot, current);
 				}
-			});
+			}
 		}
 	}
 
@@ -205,6 +241,16 @@ public class EquipmentCheckPlugin extends Plugin
 	boolean isSlotCompatible(EquipmentInventorySlot slot)
 	{
 		return !(slot.equals(EquipmentInventorySlot.SHIELD) && has2hEquipped);
+	}
+
+	boolean isSlotContextActive(EquipmentInventorySlot slot)
+	{
+		SlotContextMode context = enabledSlots.get(slot).getContextMode().get();
+		if (context == SlotContextMode.WILDERNESS)
+		{
+			return client.getVarbitValue(VarbitID.INSIDE_WILDERNESS) == 1;
+		}
+		return true;
 	}
 
 	String getSlotLabel(EquipmentInventorySlot slot)
@@ -257,35 +303,35 @@ public class EquipmentCheckPlugin extends Plugin
 	private void setupReminders()
 	{
 		addIfEnabled(EquipmentInventorySlot.HEAD, config.headCheckMode() != SlotCheckMode.OFF,
-			config::headCheckMode, config::getHeadItem);
+			config::headCheckMode, config::getHeadItem, config::headContextMode);
 		addIfEnabled(EquipmentInventorySlot.CAPE, config.capeCheckMode() != SlotCheckMode.OFF,
-			config::capeCheckMode, config::getCapeItem);
+			config::capeCheckMode, config::getCapeItem, config::capeContextMode);
 		addIfEnabled(EquipmentInventorySlot.AMULET, config.amuletCheckMode() != SlotCheckMode.OFF,
-			config::amuletCheckMode, config::getAmuletItem);
+			config::amuletCheckMode, config::getAmuletItem, config::amuletContextMode);
 		addIfEnabled(EquipmentInventorySlot.AMMO, config.ammoCheckMode() != SlotCheckMode.OFF,
-			config::ammoCheckMode, config::getAmmoItem);
+			config::ammoCheckMode, config::getAmmoItem, config::ammoContextMode);
 		addIfEnabled(EquipmentInventorySlot.WEAPON, config.weaponCheckMode() != SlotCheckMode.OFF,
-			config::weaponCheckMode, config::getWeaponItem);
+			config::weaponCheckMode, config::getWeaponItem, config::weaponContextMode);
 		addIfEnabled(EquipmentInventorySlot.BODY, config.bodyCheckMode() != SlotCheckMode.OFF,
-			config::bodyCheckMode, config::getBodyItem);
+			config::bodyCheckMode, config::getBodyItem, config::bodyContextMode);
 		addIfEnabled(EquipmentInventorySlot.SHIELD, config.shieldCheckMode() != SlotCheckMode.OFF,
-			config::shieldCheckMode, config::getShieldItem);
+			config::shieldCheckMode, config::getShieldItem, config::shieldContextMode);
 		addIfEnabled(EquipmentInventorySlot.LEGS, config.legsCheckMode() != SlotCheckMode.OFF,
-			config::legsCheckMode, config::getLegsItem);
+			config::legsCheckMode, config::getLegsItem, config::legsContextMode);
 		addIfEnabled(EquipmentInventorySlot.GLOVES, config.glovesCheckMode() != SlotCheckMode.OFF,
-			config::glovesCheckMode, config::getGlovesItem);
+			config::glovesCheckMode, config::getGlovesItem, config::glovesContextMode);
 		addIfEnabled(EquipmentInventorySlot.BOOTS, config.bootsCheckMode() != SlotCheckMode.OFF,
-			config::bootsCheckMode, config::getBootsItem);
+			config::bootsCheckMode, config::getBootsItem, config::bootsContextMode);
 		addIfEnabled(EquipmentInventorySlot.RING, config.ringCheckMode() != SlotCheckMode.OFF,
-			config::ringCheckMode, config::getRingItem);
+			config::ringCheckMode, config::getRingItem, config::ringContextMode);
 	}
 
-	private void addIfEnabled(EquipmentInventorySlot slot, boolean shouldAlert, Supplier<SlotCheckMode> mode, Supplier<String> item)
+	private void addIfEnabled(EquipmentInventorySlot slot, boolean shouldAlert, Supplier<SlotCheckMode> mode, Supplier<String> item, Supplier<SlotContextMode> contextMode)
 	{
 		if (shouldAlert)
 		{
 			final boolean prev = !enabledSlots.containsKey(slot) || enabledSlots.get(slot).isShouldAlert();
-			final SlotState state = new SlotState(prev, mode, item);
+			final SlotState state = new SlotState(prev, mode, item, contextMode);
 			enabledSlots.put(slot, state);
 		}
 		else
@@ -305,7 +351,7 @@ public class EquipmentCheckPlugin extends Plugin
 
 	private void alert(EquipmentInventorySlot slot)
 	{
-		if (!isSlotCompatible(slot))
+		if (!isSlotCompatible(slot) || !isSlotContextActive(slot))
 		{
 			return;
 		}
